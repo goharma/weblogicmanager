@@ -5,47 +5,29 @@ Quickly get started with [Python](https://www.python.org/) using this starter!
 - If you want to upgrade Python, you can change the image in the [Dockerfile](./.devcontainer/Dockerfile).
 
 
-# Import necessary modules
-from weblogic.management.security.authorization import RoleMapperMBean
-
 # Connect to the Admin Server
 connect('weblogic_username', 'weblogic_password', 't3://admin_server_host:admin_server_port')
 
-# Start an edit session
-edit()
-startEdit()
+# Navigate to the security realm (usually 'myrealm')
+realmName = 'myrealm'
+roleMapperName = 'XACMLRoleMapper'  # Ensure this is the correct RoleMapper for your configuration
 
-# Navigate to the DataSource
-cd('/JDBCSystemResources/YourDataSourceName/JdbcResource/YourDataSourceName')
+# Use Runtime MBean Server to get the Realm MBean
+realmPath = '/SecurityConfiguration/mydomain/Realms/' + realmName
+cd(realmPath + '/RoleMappers/' + roleMapperName)
 
-# Navigate to the security policies for the DataSource
-cd('JDBCDataSourceParams/YourDataSourceName')
+# Define the security policy
+resourcePath = 'type=weblogic,jdbc,resource=jdbc/MyDataSource'
+policyExpression = 'Grp(SPNGO) | user(web-admin)'
 
-# Create a new security policy
+# Set the security policy
 try:
-    # Replace 'YourDataSourceName' with the actual name of your datasource
-    policyName = 'YourDataSourceNamePolicy'
-    realmName = 'myrealm'
-    resourceId = 'type=jdbc,application=YourDataSourceName'
-    
-    # Create a new RoleMapper for the specific DataSource
-    cd('/SecurityConfiguration/mydomain/Realms/' + realmName + '/RoleMappers/XACMLRoleMapper')
-    
-    # Add a security policy for a specific user
-    cmo.createRoleMapping(policyName, resourceId, None, ['web-admin'])
-    
-    # Add a security policy for a specific role
-    cmo.createRoleMapping(policyName, resourceId, 'SPNGO', None)
-
-    # Save and activate the changes
-    save()
-    activate(block='true')
-    
-    print("Security policy created successfully for DataSource: YourDataSourceName")
+    # Check if RoleMapper is XACMLRoleMapper to use specific XACML functions
+    cmo.createRoleExpression(resourcePath, policyExpression)
+    print("Security policy created successfully for JDBC Datasource: MyDataSource")
 except Exception as e:
     print("Error occurred while creating security policy: ", e)
-    undo('true', 'y')
-    cancelEdit('y')
 
 # Disconnect from Admin Server
 disconnect()
+
