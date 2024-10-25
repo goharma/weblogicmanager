@@ -1,0 +1,35 @@
+pip install click click-completion
+
+import click
+import click_completion
+
+# Initialize the completion library
+click_completion.init()
+
+@click.group()
+def cli():
+    """A sample CLI with autocompletion enabled."""
+    pass
+
+@cli.command()
+@click.argument("name", type=str)
+def greet(name):
+    """Greets a user by name."""
+    click.echo(f"Hello, {name}!")
+
+@cli.command()
+@click.option("--count", default=1, help="Number of greetings.")
+@click.argument("name", type=str)
+def repeat_greet(count, name):
+    """Greets a user multiple times."""
+    for _ in range(count):
+        click.echo(f"Hello, {name}!")
+
+if __name__ == "__main__":
+    cli()
+
+
+~/.bashrc 
+eval "$(_CLI_COMPLETE=bash_source cli)"
+
+
