@@ -15,3 +15,14 @@ pm.environment.set("currentPort", currentPort);
 
 // Update the index for the next request
 pm.environment.set("portIndex", ++index);
+
+
+
+// Log the entire response
+console.log("Response:", pm.response.json());
+
+// OR log specific parts of the response
+console.log("Status Code:", pm.response.code);
+console.log("Body:", pm.response.text());
+
+
