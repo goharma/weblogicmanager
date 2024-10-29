@@ -1,0 +1,17 @@
+// Define your ports
+const ports = [8080, 8081, 8082, 8083];
+
+// Retrieve the index from the environment (or start with 0 if undefined)
+let index = pm.environment.get("portIndex") || 0;
+
+// Check if index is within bounds, otherwise reset
+if (index >= ports.length) {
+  index = 0;
+}
+
+// Set the current port based on the index
+const currentPort = ports[index];
+pm.environment.set("currentPort", currentPort);
+
+// Update the index for the next request
+pm.environment.set("portIndex", ++index);
